@@ -53,9 +53,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(new AntPathRequestMatcher("/api/auth/token")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll()
-                        // These are new rules for a hypothetical user endpoint and an admin endpoint
-                        .requestMatchers(new AntPathRequestMatcher("/api/messages/user")).hasRole("USER")
-                        .requestMatchers(new AntPathRequestMatcher("/api/messages/admin")).hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()));

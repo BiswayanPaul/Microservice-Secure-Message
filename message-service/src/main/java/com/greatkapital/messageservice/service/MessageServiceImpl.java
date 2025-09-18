@@ -71,13 +71,10 @@ public class MessageServiceImpl implements MessageService {
     }
 
     private String decryptContent(String encryptedContent, String encryptionType) {
-        // String url = encryptionServiceUrl + "/decrypt"; // Note: your manager's code
-        // doesn't have a decrypt endpoint
-        // For decryption, you'll need to send the encrypted content and type
-        // This part needs to be implemented in the EncryptionService based on your
-        // project's full requirements
-        // The original code you shared from your manager doesn't include the decrypt
-        // endpoint, so this will fail.
-        return "Decryption not implemented";
+        String url = encryptionServiceUrl + "/decrypt";
+        EncryptionRequest request = new EncryptionRequest();
+        request.setMessage(encryptedContent);
+        request.setEncryptionType(encryptionType);
+        return restTemplate.postForObject(url, request, EncryptionResponse.class).getEncryptedMessage();
     }
 }

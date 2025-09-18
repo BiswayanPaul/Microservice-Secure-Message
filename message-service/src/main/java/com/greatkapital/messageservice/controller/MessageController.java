@@ -4,6 +4,7 @@ import com.greatkapital.messageservice.dto.MessageRequest;
 import com.greatkapital.messageservice.dto.MessageResponse;
 import com.greatkapital.messageservice.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -14,10 +15,11 @@ import java.util.List;
 public class MessageController {
 
     @Autowired
+    @Qualifier("messageServiceImpl")
     private MessageService messageService;
 
     @PostMapping("/send")
-    public ResponseEntity<MessageResponse> sendMessage(Authentication authentication,
+    public ResponseEntity<?> sendMessage(Authentication authentication,
             @RequestBody MessageRequest request) {
         try {
             String sender = authentication.getName();
@@ -25,7 +27,7 @@ public class MessageController {
                     "AES");
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
 

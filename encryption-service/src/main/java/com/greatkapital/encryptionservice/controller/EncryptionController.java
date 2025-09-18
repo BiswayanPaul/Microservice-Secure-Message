@@ -40,4 +40,20 @@ public class EncryptionController {
             return ResponseEntity.internalServerError().body("Encryption failed: " + e.getMessage());
         }
     }
+
+    @PostMapping("/decrypt")
+    public ResponseEntity<?> decryptMessage(@RequestBody EncryptionRequest request) {
+        EncryptionStrategy strategy = encryptionStrategies.get(request.getEncryptionType().toUpperCase());
+
+        if (strategy == null) {
+            return ResponseEntity.badRequest().body("Unsupported encryption type.");
+        }
+
+        try {
+            String decryptedMessage = strategy.decrypt(request.getMessage());
+            return ResponseEntity.ok(new EncryptionResponse(decryptedMessage));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Decryption failed: " + e.getMessage());
+        }
+    }
 }
