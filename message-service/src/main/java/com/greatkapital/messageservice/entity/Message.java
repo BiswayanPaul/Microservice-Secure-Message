@@ -2,6 +2,7 @@ package com.greatkapital.messageservice.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "messages")
@@ -13,5 +14,5 @@ public class Message {
     private String sender;
     private String recipient;
     private String encryptedContent;
-    private String timestamp;
+    private LocalDateTime timestamp;
 }

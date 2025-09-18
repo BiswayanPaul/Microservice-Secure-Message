@@ -26,6 +26,17 @@ public class AesEncryptionStrategy implements EncryptionStrategy {
     }
 
     @Override
+    public String decrypt(String encryptedData) throws Exception {
+        byte[] keyBytes = Base64.getDecoder().decode(aesKeyString);
+        SecretKeySpec secretKey = new SecretKeySpec(keyBytes, ALGORITHM);
+        Cipher cipher = Cipher.getInstance(ALGORITHM);
+        cipher.init(Cipher.DECRYPT_MODE, secretKey);
+        byte[] encryptedBytes = Base64.getDecoder().decode(encryptedData);
+        byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
+        return new String(decryptedBytes, StandardCharsets.UTF_8);
+    }
+
+    @Override
     public String getStrategyName() {
         return "AES";
     }
