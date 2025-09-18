@@ -8,4 +8,8 @@ public interface MessageService {
             throws Exception;
 
     List<MessageResponse> getMessagesForUser(String username) throws Exception;
+    
+    List<MessageResponse> getSentMessagesForUser(String username) throws Exception;
+    
+    List<MessageResponse> getReceivedMessagesForUser(String username) throws Exception;
 }

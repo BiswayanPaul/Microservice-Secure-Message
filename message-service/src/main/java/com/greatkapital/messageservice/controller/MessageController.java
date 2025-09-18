@@ -41,4 +41,35 @@ public class MessageController {
             return ResponseEntity.badRequest().build();
         }
     }
+
+    @GetMapping("/sent")
+    public ResponseEntity<List<MessageResponse>> getSentMessages(Authentication authentication) {
+        try {
+            String username = authentication.getName();
+            List<MessageResponse> messages = messageService.getSentMessagesForUser(username);
+            return ResponseEntity.ok(messages);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/received")
+    public ResponseEntity<?> getReceivedMessages(Authentication authentication) {
+        try {
+            String username = authentication.getName();
+            System.out.println("DEBUG: Getting received messages for user: " + username);
+            List<MessageResponse> messages = messageService.getReceivedMessagesForUser(username);
+            System.out.println("DEBUG: Found " + messages.size() + " received messages");
+            return ResponseEntity.ok(messages);
+        } catch (Exception e) {
+            System.out.println("DEBUG: Error getting received messages: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/test")
+    public ResponseEntity<String> test() {
+        return ResponseEntity.ok("Message service is running with updated code!");
+    }
 }

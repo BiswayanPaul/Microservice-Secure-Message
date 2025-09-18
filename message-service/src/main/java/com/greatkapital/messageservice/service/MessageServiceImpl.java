@@ -44,14 +44,57 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public List<MessageResponse> getMessagesForUser(String username) throws Exception {
-        List<Message> messages = messageRepository.findBySenderOrRecipientOrderByTimestampAsc(username, username);
+        List<Message> messages = messageRepository.findMessagesForUser(username);
+
+        return messages.stream()
+                .filter(message -> {
+                    // Additional security check: ensure user is either sender or recipient
+                    boolean isAuthorized = username.equals(message.getSender()) || username.equals(message.getRecipient());
+                    if (!isAuthorized) {
+                        System.out.println("SECURITY WARNING: User " + username + " tried to access message " + message.getId() + 
+                                         " from " + message.getSender() + " to " + message.getRecipient());
+                    }
+                    return isAuthorized;
+                })
+                .map(message -> {
+                    try {
+                        String decryptedContent = decryptContent(message.getEncryptedContent(), "AES");
+                        return new MessageResponse(message.getId(), message.getSender(), message.getRecipient(),
+                                decryptedContent);
+                    } catch (Exception e) {
+                        return new MessageResponse(message.getId(), message.getSender(), message.getRecipient(),
+                                "Decryption failed.");
+                    }
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<MessageResponse> getSentMessagesForUser(String username) throws Exception {
+        List<Message> messages = messageRepository.findSentMessagesForUser(username);
 
         return messages.stream()
                 .map(message -> {
                     try {
-                        String decryptedContent = decryptContent(message.getEncryptedContent(), "AES"); // Assuming AES
-                                                                                                        // for
-                                                                                                        // decryption
+                        String decryptedContent = decryptContent(message.getEncryptedContent(), "AES");
+                        return new MessageResponse(message.getId(), message.getSender(), message.getRecipient(),
+                                decryptedContent);
+                    } catch (Exception e) {
+                        return new MessageResponse(message.getId(), message.getSender(), message.getRecipient(),
+                                "Decryption failed.");
+                    }
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<MessageResponse> getReceivedMessagesForUser(String username) throws Exception {
+        List<Message> messages = messageRepository.findReceivedMessagesForUser(username);
+
+        return messages.stream()
+                .map(message -> {
+                    try {
+                        String decryptedContent = decryptContent(message.getEncryptedContent(), "AES");
                         return new MessageResponse(message.getId(), message.getSender(), message.getRecipient(),
                                 decryptedContent);
                     } catch (Exception e) {
